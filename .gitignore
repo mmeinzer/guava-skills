@@ -1,0 +1,7 @@
+node_modules/
+*.log
+.DS_Store
+
+# Secrets - never commit
+*.json.secret
+credentials.json

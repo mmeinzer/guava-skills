@@ -1,0 +1,12 @@
+{
+  "name": "mom-crm",
+  "version": "1.0.0",
+  "description": "CRM skill for Mom - Google Sheets integration",
+  "main": "crm.js",
+  "scripts": {
+    "test": "node crm.js help"
+  },
+  "dependencies": {
+    "googleapis": "^140.0.0"
+  }
+}
