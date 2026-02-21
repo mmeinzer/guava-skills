@@ -23,7 +23,7 @@ All commands run from `/workspace/skills/guava-skills/crm`.
 
 **Add a contact:**
 ```bash
-node crm.js add-contact --name "Sarah Chen" --title "Program Director" --institution "Stanford" --email "schen@stanford.edu" --phone "650-555-1234" --status "Active" --notes "Met at conference"
+node crm.js add-contact --name "Sarah Chen" --title "Program Director" --institution "Stanford" --residency "Stanford" --specialty "Psychiatry" --email "schen@stanford.edu" --phone "650-555-1234" --status "Active" --owner "David" --notes "Met at conference"
 ```
 
 **List all contacts:**
@@ -117,6 +117,21 @@ After setting a follow-up date, consider creating a reminder event:
 ```bash
 echo '{"type":"one-shot","channelId":"CHANNEL","text":"Follow up with Sarah Chen at Stanford","at":"2025-02-28T09:00:00-05:00"}' > /workspace/events/followup-sarah-$(date +%s).json
 ```
+
+## Contact Fields
+
+| Field | Description |
+|-------|-------------|
+| name | Contact name (required) |
+| title | Role/seniority (e.g., "Chief resident", "Attending") |
+| institution | Current institution |
+| residency | Residency/fellowship institution |
+| specialty | Medical specialty |
+| email | Email address |
+| phone | Phone number |
+| status | Active, Inactive, Champion, Churned |
+| owner | Relationship owner (David, Angelo, Matt) |
+| notes | Free-form notes |
 
 ## File Locations
 
