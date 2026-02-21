@@ -13,10 +13,10 @@ const CREDENTIALS_PATH = config.credentialsPath || '/workspace/.secrets/google-s
 // Sheet definitions
 const SHEET_DEFS = {
   Contacts: {
-    headers: ['Name', 'Title', 'Institution', 'Email', 'Phone', 'Status', 'Last Contact', 'Next Follow-up', 'Owner', 'Notes'],
+    headers: ['Name', 'Title', 'Institution', 'Residency', 'Specialty', 'Email', 'Phone', 'Status', 'Last Contact', 'Next Follow-up', 'Owner', 'Notes'],
     validations: {
-      5: ['Active', 'Inactive', 'Champion', 'Churned'], // Status column
-      8: ['David', 'Angelo', 'Matt'] // Owner column
+      7: ['Active', 'Inactive', 'Champion', 'Churned'], // Status column
+      10: ['David', 'Angelo', 'Matt'] // Owner column
     }
   },
   Interactions: {
@@ -267,6 +267,8 @@ const commands = {
       opts.name || '',
       opts.title || '',
       opts.institution || '',
+      opts.residency || '',
+      opts.specialty || '',
       opts.email || '',
       opts.phone || '',
       opts.status || 'Active',
@@ -290,11 +292,13 @@ const commands = {
     for (let i = 1; i < rows.length; i++) {
       const row = rows[i];
       console.log(`\n${row[0]} - ${row[2]}`);
-      console.log(`  Title: ${row[1] || 'N/A'} | Owner: ${row[8] || 'N/A'}`);
-      console.log(`  Email: ${row[3] || 'N/A'} | Phone: ${row[4] || 'N/A'}`);
-      console.log(`  Status: ${row[5] || 'N/A'} | Last Contact: ${row[6] || 'N/A'}`);
-      if (row[7]) console.log(`  Follow-up: ${row[7]}`);
-      if (row[9]) console.log(`  Notes: ${row[9]}`);
+      console.log(`  Title: ${row[1] || 'N/A'} | Specialty: ${row[4] || 'N/A'}`);
+      console.log(`  Residency: ${row[3] || 'N/A'}`);
+      console.log(`  Email: ${row[5] || 'N/A'} | Phone: ${row[6] || 'N/A'}`);
+      console.log(`  Status: ${row[7] || 'N/A'} | Owner: ${row[10] || 'N/A'}`);
+      console.log(`  Last Contact: ${row[8] || 'N/A'}`);
+      if (row[9]) console.log(`  Follow-up: ${row[9]}`);
+      if (row[11]) console.log(`  Notes: ${row[11]}`);
     }
   },
 
@@ -356,7 +360,7 @@ const commands = {
       console.log(`Contact "${opts.name}" not found.`);
       return;
     }
-    await updateCell('Contacts', rowIndex, 7, opts.date);
+    await updateCell('Contacts', rowIndex, 9, opts.date); // Column J = Next Follow-up
     console.log(`Set follow-up for ${opts.name}: ${opts.date}`);
   },
 
@@ -379,7 +383,7 @@ const commands = {
       const contacts = await getRows('Contacts');
       const rowIndex = findRow(contacts, 0, opts.contact);
       if (rowIndex) {
-        await updateCell('Contacts', rowIndex, 6, today());
+        await updateCell('Contacts', rowIndex, 8, today()); // Column I = Last Contact
       }
     }
 
@@ -505,8 +509,8 @@ const commands = {
     todayDate.setHours(0, 0, 0, 0);
 
     const needsFollowup = rows.slice(1).filter(row => {
-      if (!row[7]) return false;
-      const followupDate = new Date(row[7]);
+      if (!row[9]) return false; // Column J = Next Follow-up
+      const followupDate = new Date(row[9]);
       return followupDate <= todayDate;
     });
 
@@ -517,10 +521,10 @@ const commands = {
 
     console.log('NEEDS FOLLOW-UP\n' + '='.repeat(80));
     needsFollowup.forEach(row => {
-      console.log(`\n${row[0]} @ ${row[2]} (Owner: ${row[8] || 'N/A'})`);
-      console.log(`  Follow-up date: ${row[7]}`);
-      console.log(`  Last contact: ${row[6] || 'Never'}`);
-      if (row[9]) console.log(`  Notes: ${row[9]}`);
+      console.log(`\n${row[0]} @ ${row[2]} (Owner: ${row[10] || 'N/A'})`);
+      console.log(`  Follow-up date: ${row[9]}`);
+      console.log(`  Last contact: ${row[8] || 'Never'}`);
+      if (row[11]) console.log(`  Notes: ${row[11]}`);
     });
   },
 
@@ -533,8 +537,8 @@ const commands = {
     cutoff.setDate(cutoff.getDate() - days);
 
     const stale = rows.slice(1).filter(row => {
-      if (!row[6]) return true; // Never contacted
-      const lastContact = new Date(row[6]);
+      if (!row[8]) return true; // Never contacted - Column I = Last Contact
+      const lastContact = new Date(row[8]);
       return lastContact < cutoff;
     });
 
@@ -545,14 +549,14 @@ const commands = {
 
     console.log(`STALE RELATIONSHIPS (no contact in ${days}+ days)\n` + '='.repeat(80));
     stale.sort((a, b) => {
-      const dateA = a[6] ? new Date(a[6]) : new Date(0);
-      const dateB = b[6] ? new Date(b[6]) : new Date(0);
+      const dateA = a[8] ? new Date(a[8]) : new Date(0);
+      const dateB = b[8] ? new Date(b[8]) : new Date(0);
       return dateA - dateB;
     });
 
     stale.forEach(row => {
-      const daysSince = row[6]
-        ? Math.floor((new Date() - new Date(row[6])) / (1000 * 60 * 60 * 24))
+      const daysSince = row[8]
+        ? Math.floor((new Date() - new Date(row[8])) / (1000 * 60 * 60 * 24))
         : 'Never';
       console.log(`${row[0]} @ ${row[2]} - ${daysSince} days`);
     });
@@ -575,8 +579,8 @@ const commands = {
     const todayDate = new Date();
     todayDate.setHours(0, 0, 0, 0);
     const needsFollowup = contacts.slice(1).filter(row => {
-      if (!row[7]) return false;
-      return new Date(row[7]) <= todayDate;
+      if (!row[9]) return false; // Column J = Next Follow-up
+      return new Date(row[9]) <= todayDate;
     });
 
     console.log('WEEKLY CRM SUMMARY\n' + '='.repeat(80));
@@ -595,7 +599,7 @@ const commands = {
     if (needsFollowup.length > 0) {
       console.log('\n## Needs Follow-up');
       needsFollowup.forEach(row => {
-        console.log(`  ${row[0]} @ ${row[2]} (due: ${row[7]})`);
+        console.log(`  ${row[0]} @ ${row[2]} (due: ${row[9]})`);
       });
     }
   },
