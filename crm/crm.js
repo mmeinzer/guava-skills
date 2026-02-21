@@ -13,9 +13,10 @@ const CREDENTIALS_PATH = config.credentialsPath || '/workspace/.secrets/google-s
 // Sheet definitions
 const SHEET_DEFS = {
   Contacts: {
-    headers: ['Name', 'Title', 'Institution', 'Email', 'Phone', 'Status', 'Last Contact', 'Next Follow-up', 'Notes'],
+    headers: ['Name', 'Title', 'Institution', 'Email', 'Phone', 'Status', 'Last Contact', 'Next Follow-up', 'Owner', 'Notes'],
     validations: {
-      5: ['Active', 'Inactive', 'Champion', 'Churned'] // Status column
+      5: ['Active', 'Inactive', 'Champion', 'Churned'], // Status column
+      8: ['David', 'Angelo', 'Matt'] // Owner column
     }
   },
   Interactions: {
@@ -271,6 +272,7 @@ const commands = {
       opts.status || 'Active',
       today(),
       opts.followup || '',
+      opts.owner || '',
       opts.notes || ''
     ];
     await appendRow('Contacts', row);
@@ -288,11 +290,11 @@ const commands = {
     for (let i = 1; i < rows.length; i++) {
       const row = rows[i];
       console.log(`\n${row[0]} - ${row[2]}`);
-      console.log(`  Title: ${row[1] || 'N/A'}`);
+      console.log(`  Title: ${row[1] || 'N/A'} | Owner: ${row[8] || 'N/A'}`);
       console.log(`  Email: ${row[3] || 'N/A'} | Phone: ${row[4] || 'N/A'}`);
       console.log(`  Status: ${row[5] || 'N/A'} | Last Contact: ${row[6] || 'N/A'}`);
       if (row[7]) console.log(`  Follow-up: ${row[7]}`);
-      if (row[8]) console.log(`  Notes: ${row[8]}`);
+      if (row[9]) console.log(`  Notes: ${row[9]}`);
     }
   },
 
@@ -515,10 +517,10 @@ const commands = {
 
     console.log('NEEDS FOLLOW-UP\n' + '='.repeat(80));
     needsFollowup.forEach(row => {
-      console.log(`\n${row[0]} @ ${row[2]}`);
+      console.log(`\n${row[0]} @ ${row[2]} (Owner: ${row[8] || 'N/A'})`);
       console.log(`  Follow-up date: ${row[7]}`);
       console.log(`  Last contact: ${row[6] || 'Never'}`);
-      if (row[8]) console.log(`  Notes: ${row[8]}`);
+      if (row[9]) console.log(`  Notes: ${row[9]}`);
     });
   },
 
