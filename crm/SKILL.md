@@ -11,13 +11,13 @@ Manage customer relationships via Google Sheets. Tracks contacts, logs interacti
 
 First-time setup in sandbox:
 ```bash
-cd /workspace/skills/crm
+cd /workspace/skills/guava-skills/crm
 npm install
 ```
 
 ## Commands
 
-All commands run from `/workspace/skills/crm`.
+All commands run from `/workspace/skills/guava-skills/crm`.
 
 ### Contacts
 
