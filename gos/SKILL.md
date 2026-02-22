@@ -38,6 +38,7 @@ Company operating system. Track contacts, meetings, weekly commitments, interact
 /workspace/bin/gos commit list [--week X] [--area X] [--employee X] [--status X]
 /workspace/bin/gos commit done <id>
 /workspace/bin/gos commit drop <id>
+/workspace/bin/gos commit delete <id>
 ```
 
 ### Recognition
@@ -71,6 +72,7 @@ Company operating system. Track contacts, meetings, weekly commitments, interact
 | "Mark Module 1 as done" | `/workspace/bin/gos commit done <id>` |
 | "Who needs follow-up?" | `/workspace/bin/gos stale` |
 | "Add Stanford demo to this week's commitments" | `/workspace/bin/gos commit add --description "Stanford demo" --area gtm` |
+| "Delete commitment 5" | `/workspace/bin/gos commit delete 5` |
 
 ## Areas
 
